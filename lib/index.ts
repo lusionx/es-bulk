@@ -31,6 +31,7 @@ interface BulkItem extends EsRow {
 export class Bulker {
     bulk: string[] = []
     size: number = 0
+    protected page: number = 0
     constructor(public url: string, public max: number) {
     }
     async submit() {
@@ -41,7 +42,9 @@ export class Bulker {
         this.bulk.push('')
         const txt = this.bulk.join('\n')
         this.bulk = []
+        const cc = this.size
         this.size = 0
+        console.log('submit %d * %d', this.page++, cc)
         if (!/^http.*_bulk$/.test(this.url)) {
             console.log('invalid', this.url)
             console.log(txt)

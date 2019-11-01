@@ -1,10 +1,10 @@
 {
   "name": "es-bulk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "bin": {
-    "es-bulk": "index.js"
+    "es-bulk": "bin/es-bulk.js"
   },
   "files": [
     "**/*.js"

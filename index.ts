@@ -4,7 +4,7 @@ import LineByLine = require('n-readlines')
 
 const argv = yargs.usage('$0')
     .option('url', {
-        alias: 'url',
+        describe: 'es://.../_bulk',
         string: true,
         default: "",
     })
@@ -28,7 +28,7 @@ const argv = yargs.usage('$0')
         boolean: true
     })
     .option('delete', {
-        describe: 'delete line',
+        describe: 'delete doc',
         boolean: true
     })
     .option('head', {
@@ -37,8 +37,6 @@ const argv = yargs.usage('$0')
     })
     .help('h').alias('h', 'help')
     .argv
-
-
 
 async function hander(line: string, bulk: lib.Bulker) {
     if (!line) return
