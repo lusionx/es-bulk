@@ -35,17 +35,32 @@ const argv = yargs.usage('$0')
         describe: 'head <n> of input',
         number: true,
     })
+    .option('iter', {
+        describe: 'row hook (e)=>{}',
+        string: true,
+    })
     .help('h').alias('h', 'help')
     .argv
 
+const iter = (function () {
+    if (argv.iter) {
+        const fn = eval(argv.iter)
+        if (typeof fn === 'function') {
+            return fn
+        }
+    }
+    return () => { }
+})()
+
 async function hander(line: string, bulk: lib.Bulker) {
     if (!line) return
-    const row = lib.jparse<lib.EsRow>(line)
+    let row = lib.jparse<lib.EsRow>(line)
     if (!row) return
-    if (!row._id || !row._source) return
+    iter(row)
+    if (!row._id) return
     if (argv.update) {
         let oo = { update: { _id: row._id, _type: row._type, _index: row._index } }
-        let txt = { doc: row._source }
+        let txt = { doc: row._source || {} }
         if (argv.upsert) {
             Object.assign(txt, { doc_as_upsert: true })
         }
