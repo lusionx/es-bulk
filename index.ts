@@ -36,7 +36,7 @@ const argv = yargs.usage('$0')
         number: true,
     })
     .option('iter', {
-        describe: 'row hook (e)=>{}',
+        describe: 'row hook (e)=>{}, skip return false',
         string: true,
     })
     .help('h').alias('h', 'help')
@@ -56,7 +56,7 @@ async function hander(line: string, bulk: lib.Bulker) {
     if (!line) return
     let row = lib.jparse<lib.EsRow>(line)
     if (!row) return
-    iter(row)
+    if (false === iter(row)) return
     if (!row._id) return
     if (argv.update) {
         let oo = { update: { _id: row._id, _type: row._type, _index: row._index } }
