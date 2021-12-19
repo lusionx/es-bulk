@@ -31,6 +31,10 @@ const argv = yargs.usage('$0')
         describe: 'delete doc',
         boolean: true
     })
+    .option('create', {
+        describe: 'create doc',
+        boolean: true
+    })
     .option('head', {
         describe: 'head <n> of input',
         number: true,
@@ -57,8 +61,8 @@ async function hander(line: string, bulk: lib.Bulker) {
     let row = lib.jparse<lib.EsRow>(line)
     if (!row) return
     if (false === iter(row)) return
-    if (!row._id) return
     if (argv.update) {
+        if (!row._id) return
         let oo = { update: { _id: row._id, _type: row._type, _index: row._index } }
         let txt = { doc: row._source || {} }
         if (argv.upsert) {
@@ -67,8 +71,13 @@ async function hander(line: string, bulk: lib.Bulker) {
         await bulk.push(JSON.stringify(oo), JSON.stringify(txt))
     }
     else if (argv.delete) {
+        if (!row._id) return
         let oo = { delete: { _id: row._id, _type: row._type, _index: row._index } }
         await bulk.push(JSON.stringify(oo))
+    } else if (argv.create) {
+        if (!row._source) return
+        let oo = row._id ? { create: { _id: row._id, _type: row._type, _index: row._index } } : { index: { _type: row._type, _index: row._index } }
+        await bulk.push(JSON.stringify(oo), JSON.stringify(row._source))
     }
 }
 
